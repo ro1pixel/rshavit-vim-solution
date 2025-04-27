@@ -6,10 +6,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.core.env.Environment;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-
 import com.vim.notifications.dto.NotificationRequestDTO;
 import com.vim.notifications.service.NotificationService;
 import com.vim.notifications.model.UserPreferences;
@@ -40,7 +37,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         UserPreferences user = userPreferencesRepository.findByUserIdOrEmail(request.getUserId(), request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + request.getUserId()));
+                .orElseThrow(() -> new IllegalArgumentException("User not found with provided ID or email"));
 
         Map<String, Boolean> preferences = user.getPreferences();
 

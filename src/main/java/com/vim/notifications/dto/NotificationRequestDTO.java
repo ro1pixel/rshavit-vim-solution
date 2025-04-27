@@ -1,14 +1,21 @@
 package com.vim.notifications.dto;
 
-import java.util.Optional;
-
 import lombok.Getter;
 import lombok.Setter;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.NotBlank;
 
 @Getter
 @Setter
 public class NotificationRequestDTO {
-    private Optional<Long> userId;
-    private Optional<String> email;
+    private Long userId;
+    private String email;
+
+    @NotBlank(message = "Message is required")
     private String message;
+
+    @AssertTrue(message = "Either userId or email must be provided")
+    private boolean isUserIdOrEmailPresent() {
+        return userId != null || (email != null && !email.isEmpty());
+    }
 }

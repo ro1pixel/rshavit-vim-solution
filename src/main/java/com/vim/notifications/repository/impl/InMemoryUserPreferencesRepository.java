@@ -17,8 +17,8 @@ public class InMemoryUserPreferencesRepository implements UserPreferencesReposit
     @Override
     public UserPreferences save(UserPreferences preferences) {
         Optional<UserPreferences> existingUser = findByUserIdOrEmail(
-                Optional.ofNullable(preferences.getUserId()),
-                Optional.ofNullable(preferences.getEmail()));
+                preferences.getUserId(),
+                preferences.getEmail());
 
         if (existingUser.isPresent()) {
             return existingUser.get();
@@ -33,8 +33,8 @@ public class InMemoryUserPreferencesRepository implements UserPreferencesReposit
     @Override
     public UserPreferences update(UserPreferences preferences) {
         Optional<UserPreferences> existingUser = findByUserIdOrEmail(
-                Optional.ofNullable(preferences.getUserId()),
-                Optional.ofNullable(preferences.getEmail()));
+                preferences.getUserId(),
+                preferences.getEmail());
 
         if (!existingUser.isPresent()) {
             throw new IllegalArgumentException("User not found with userId: " +
@@ -50,16 +50,16 @@ public class InMemoryUserPreferencesRepository implements UserPreferencesReposit
     }
 
     @Override
-    public Optional<UserPreferences> findByUserIdOrEmail(Optional<Long> userId, Optional<String> email) {
-        if (userId.isPresent()) {
-            UserPreferences preferences = userPreferencesById.get(userId.get());
+    public Optional<UserPreferences> findByUserIdOrEmail(Long userId, String email) {
+        if (userId != null) {
+            UserPreferences preferences = userPreferencesById.get(userId);
             if (preferences != null) {
                 return Optional.of(preferences);
             }
         }
 
-        if (email.isPresent()) {
-            UserPreferences preferences = userPreferencesByEmail.get(email.get());
+        if (email != null && !email.isEmpty()) {
+            UserPreferences preferences = userPreferencesByEmail.get(email);
             if (preferences != null) {
                 return Optional.of(preferences);
             }

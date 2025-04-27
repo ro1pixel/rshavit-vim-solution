@@ -13,7 +13,7 @@ public interface UserPreferencesRepository {
 
     UserPreferences update(UserPreferences preferences);
 
-    Optional<UserPreferences> findByUserIdOrEmail(Optional<Long> userId, Optional<String> email);
+    Optional<UserPreferences> findByUserIdOrEmail(Long userId, String email);
 
     @Component
     class Factory {

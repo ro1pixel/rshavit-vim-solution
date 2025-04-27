@@ -1,10 +1,12 @@
 package com.vim.notifications.service.impl;
 
+import com.vim.notifications.repository.RepositoryType;
 import com.vim.notifications.repository.UserPreferencesRepository;
 import com.vim.notifications.dto.UserPreferencesDTO;
 import com.vim.notifications.model.UserPreferences;
 import com.vim.notifications.service.UserPreferencesService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vim.notifications.repository.UserPreferencesRepository.Factory;
+
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -14,11 +16,9 @@ import java.util.Optional;
 @Service
 public class UserPreferencesServiceImpl implements UserPreferencesService {
     private final UserPreferencesRepository userPreferencesRepository;
-    private final ObjectMapper objectMapper;
 
-    public UserPreferencesServiceImpl(UserPreferencesRepository userPreferencesRepository, ObjectMapper objectMapper) {
-        this.userPreferencesRepository = userPreferencesRepository;
-        this.objectMapper = objectMapper;
+    public UserPreferencesServiceImpl(UserPreferencesRepository userPreferencesRepository, Factory repositoryFactory) {
+        this.userPreferencesRepository = repositoryFactory.ofType(RepositoryType.Cache);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class UserPreferencesServiceImpl implements UserPreferencesService {
     @Override
     public UserPreferencesDTO updateUserPreferences(UserPreferencesDTO userPreferences) {
         Optional<UserPreferences> existing = userPreferencesRepository.findByUserIdOrEmail(
-                Optional.ofNullable(userPreferences.getUserId()), Optional.ofNullable(userPreferences.getEmail()));
+                userPreferences.getUserId(), userPreferences.getEmail());
 
         if (existing.isEmpty()) {
             throw new IllegalArgumentException("User not found");

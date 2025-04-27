@@ -1,7 +1,6 @@
 package com.vim.notifications.model;
 
 import com.vim.notifications.service.impl.NotificationServiceImpl;
-import com.vim.notifications.dto.NotificationRequestDTO;
 
 public enum NotificationType {
     EMAIL("email") {
