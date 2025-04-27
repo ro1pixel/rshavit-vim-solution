@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  user-notifications-manager:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - notification-service
+    environment:
+      - NOTIFICATION_SERVICE_URL=http://notification-service:5001
+
+  notification-service:
+    image: aryekog/backend-interview-notifications-service:0.0.2
+    ports:
+      - "5001:5001"
+    environment:
+      - EMAIL_RATE_LIMIT=1
+      - SMS_RATE_LIMIT=1
+      - RATE_LIMIT_WINDOW_MS=2000
+      - ERROR_RATE=0.1
