@@ -5,11 +5,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
-import com.vim.notifications.model.UserPreferences;
-import com.vim.notifications.dto.UserPreferencesDTO;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Configuration
 public class AppConfig {

@@ -42,7 +42,7 @@ public class InMemoryUserPreferencesRepository implements UserPreferencesReposit
         }
 
         UserPreferences existing = existingUser.get();
-        preferences.setUserId(existing.getUserId()); // Preserve existing userId
+        preferences.setUserId(existing.getUserId());
 
         userPreferencesById.put(existing.getUserId(), preferences);
         userPreferencesByEmail.put(preferences.getEmail(), preferences);

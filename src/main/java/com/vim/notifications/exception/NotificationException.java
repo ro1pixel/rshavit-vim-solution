@@ -14,7 +14,7 @@ public class NotificationException extends RuntimeException {
 
     public enum NotificationErrorType {
         RATE_LIMIT("Too many requests, please try again later."),
-        SERVER_ERROR("Random server error occurred.");
+        SERVER_ERROR("Unknown server error occurred.");
 
         private final String message;
 
