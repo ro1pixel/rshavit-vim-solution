@@ -1,7 +1,8 @@
 package com.vim.notifications.service;
 
 import com.vim.notifications.dto.NotificationRequestDTO;
+import java.util.concurrent.CompletableFuture;
 
 public interface NotificationService {
-    void sendNotification(NotificationRequestDTO request);
+    CompletableFuture<Void> sendNotification(NotificationRequestDTO request);
 }

@@ -17,7 +17,7 @@ services:
     ports:
       - "5001:5001"
     environment:
-      - EMAIL_RATE_LIMIT=5
-      - SMS_RATE_LIMIT=5
-      - RATE_LIMIT_WINDOW_MS=1000
+      - EMAIL_RATE_LIMIT=1
+      - SMS_RATE_LIMIT=1
+      - RATE_LIMIT_WINDOW_MS=3000
       - ERROR_RATE=0

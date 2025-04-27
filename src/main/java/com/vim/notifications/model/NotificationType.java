@@ -1,12 +1,13 @@
 package com.vim.notifications.model;
 
 import com.vim.notifications.service.impl.NotificationServiceImpl;
+import java.util.concurrent.CompletableFuture;
 
 public enum NotificationType {
     EMAIL("email") {
         @Override
-        public void send(NotificationServiceImpl service, String contact, String message) {
-            service.sendEmailNotification(contact, message);
+        public CompletableFuture<Void> send(NotificationServiceImpl service, String contact, String message) {
+            return service.sendEmailNotification(contact, message);
         }
 
         @Override
@@ -16,8 +17,8 @@ public enum NotificationType {
     },
     SMS("sms") {
         @Override
-        public void send(NotificationServiceImpl service, String contact, String message) {
-            service.sendSmsNotification(contact, message);
+        public CompletableFuture<Void> send(NotificationServiceImpl service, String contact, String message) {
+            return service.sendSmsNotification(contact, message);
         }
 
         @Override
@@ -36,7 +37,7 @@ public enum NotificationType {
         return preferenceKey;
     }
 
-    public abstract void send(NotificationServiceImpl service, String contact, String message);
+    public abstract CompletableFuture<Void> send(NotificationServiceImpl service, String contact, String message);
 
     public abstract String getContact(UserPreferences user);
 }

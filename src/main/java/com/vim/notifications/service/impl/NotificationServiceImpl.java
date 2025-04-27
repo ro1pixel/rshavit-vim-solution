@@ -5,8 +5,10 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.core.env.Environment;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.scheduling.annotation.Async;
 import com.vim.notifications.dto.NotificationRequestDTO;
 import com.vim.notifications.service.NotificationService;
 import com.vim.notifications.model.UserPreferences;
@@ -17,21 +19,22 @@ import com.vim.notifications.repository.UserPreferencesRepository.Factory;
 import com.vim.notifications.exception.NotificationException;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.List;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
 
-    private final RestTemplate restTemplate;
     private final UserPreferencesRepository userPreferencesRepository;
-    private final String notificationServiceUrl;
+    private final HttpNotificationServiceImpl httpNotificationServiceImpl;
 
-    public NotificationServiceImpl(RestTemplate restTemplate, Factory repositoryFactory, Environment env) {
-        this.restTemplate = restTemplate;
+    public NotificationServiceImpl(RestTemplate restTemplate, Factory repositoryFactory,
+            HttpNotificationServiceImpl httpNotificationServiceImpl) {
+        this.httpNotificationServiceImpl = httpNotificationServiceImpl;
         this.userPreferencesRepository = repositoryFactory.ofType(RepositoryType.Cache);
-        this.notificationServiceUrl = env.getProperty("NOTIFICATION_SERVICE_URL", "http://localhost:5001");
     }
 
-    public void sendNotification(NotificationRequestDTO request) {
+    public CompletableFuture<Void> sendNotification(NotificationRequestDTO request) {
         if (request.getMessage() == null) {
             throw new IllegalArgumentException("Message is required");
         }
@@ -49,47 +52,26 @@ public class NotificationServiceImpl implements NotificationService {
                 }
             }
         }
+        return CompletableFuture.completedFuture(null);
     }
 
-    public void sendEmailNotification(String email, String message) {
-        Map<String, String> emailRequest = Map.of(
+    @Async("notificationTaskExecutor")
+    public CompletableFuture<Void> sendEmailNotification(String email, String message) {
+        Map<String, String> params = Map.of(
                 "email", email,
                 "message", message);
 
-        HttpEntity<Map<String, String>> request = createHttpEntity(emailRequest);
-        try {
-            restTemplate.postForObject(notificationServiceUrl + "/send-email", request, String.class);
-        } catch (HttpClientErrorException e) {
-            if (e.getStatusCode().value() == 429) {
-                throw new NotificationException(NotificationException.NotificationErrorType.RATE_LIMIT);
-            }
-            throw new NotificationException(NotificationException.NotificationErrorType.SERVER_ERROR);
-        } catch (Exception e) {
-            throw new NotificationException(NotificationException.NotificationErrorType.SERVER_ERROR);
-        }
+        httpNotificationServiceImpl.sendNotification("/send-email", params);
+        return CompletableFuture.completedFuture(null);
     }
 
-    public void sendSmsNotification(String telephone, String message) {
-        Map<String, String> smsRequest = Map.of(
+    @Async("notificationTaskExecutor")
+    public CompletableFuture<Void> sendSmsNotification(String telephone, String message) {
+        Map<String, String> params = Map.of(
                 "telephone", telephone,
                 "message", message);
 
-        HttpEntity<Map<String, String>> request = createHttpEntity(smsRequest);
-        try {
-            restTemplate.postForObject(notificationServiceUrl + "/send-sms", request, String.class);
-        } catch (HttpClientErrorException e) {
-            if (e.getStatusCode().value() == 429) {
-                throw new NotificationException(NotificationException.NotificationErrorType.RATE_LIMIT);
-            }
-            throw new NotificationException(NotificationException.NotificationErrorType.SERVER_ERROR);
-        } catch (Exception e) {
-            throw new NotificationException(NotificationException.NotificationErrorType.SERVER_ERROR);
-        }
-    }
-
-    private <T> HttpEntity<T> createHttpEntity(T body) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new HttpEntity<>(body, headers);
+        httpNotificationServiceImpl.sendNotification("/send-sms", params);
+        return CompletableFuture.completedFuture(null);
     }
 }
