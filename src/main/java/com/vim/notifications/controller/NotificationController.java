@@ -1,7 +1,6 @@
 package com.vim.notifications.controller;
 
 import com.vim.notifications.dto.NotificationRequestDTO;
-import com.vim.notifications.dto.NotificationResponseDTO;
 import com.vim.notifications.service.impl.NotificationServiceImpl;
 import com.vim.notifications.exception.NotificationException;
 import org.springframework.http.ResponseEntity;
