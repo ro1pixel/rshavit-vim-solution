@@ -63,11 +63,55 @@ The application will be available at:
 
 ## API Documentation
 
-The service provides the following endpoints:
+The service provides the following REST endpoints:
 
-- `POST /api/v1/users/{userId}/preferences` - Set user notification preferences
-- `GET /api/v1/users/{userId}/preferences` - Get user notification preferences
-- `POST /api/v1/users/{userId}/notifications` - Send notifications to a user
+### User Preferences Management
+
+- `POST /api/v1/users`
+
+  - Creates new user preferences
+  - Request Body:
+    ```json
+    {
+      "userId": 123, // Optional
+      "email": "user@example.com", // Optional (either userId or email is required)
+      "telephone": "+1234567890", // Optional
+      "preferences": {
+        "email": true,
+        "sms": false
+      }
+    }
+    ```
+  - Returns: Created user preferences with generated userId
+
+- `PUT /api/v1/users`
+  - Updates existing user preferences
+  - Request Body: Same as POST
+  - Returns: Updated user preferences
+
+### Notifications
+
+- `POST /api/v1/notifications/send`
+  - Sends notifications to a user based on their preferences
+  - Request Body:
+    ```json
+    {
+      "userId": 123, // Optional
+      "email": "user@example.com", // Optional (either userId or email is required)
+      "message": "Your notification message"
+    }
+    ```
+  - Returns: 200 OK on success
+  - Error Responses:
+    - 400 Bad Request: Invalid request or user not found
+    - 429 Too Many Requests: Rate limit exceeded
+    - 500 Internal Server Error: Server error
+
+### Authentication
+
+All endpoints require Bearer token authentication:
+
+- Header: `Authorization: Bearer onlyvim2024`
 
 ## Environment Variables
 
