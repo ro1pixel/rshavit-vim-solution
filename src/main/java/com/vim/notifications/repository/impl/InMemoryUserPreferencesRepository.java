@@ -43,9 +43,10 @@ public class InMemoryUserPreferencesRepository implements UserPreferencesReposit
 
         UserPreferences existing = existingUser.get();
         preferences.setUserId(existing.getUserId());
+        preferences.setEmail(existing.getEmail());
 
         userPreferencesById.put(existing.getUserId(), preferences);
-        userPreferencesByEmail.put(preferences.getEmail(), preferences);
+        userPreferencesByEmail.put(existing.getEmail(), preferences);
         return preferences;
     }
 
